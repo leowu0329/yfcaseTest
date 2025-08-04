@@ -1,0 +1,64 @@
+import axios from 'axios';
+
+const API_URL = 'http://localhost:5000/api';
+
+// 創建 axios 實例
+const api = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// 請求攔截器 - 添加 token
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// 響應攔截器 - 處理錯誤
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+// 認證相關 API
+export const authAPI = {
+  // 註冊
+  register: (userData) => api.post('/auth/register', userData),
+  
+  // 登入
+  login: (credentials) => api.post('/auth/login', credentials),
+  
+  // 獲取當前用戶信息
+  getMe: () => api.get('/auth/me'),
+};
+
+// 用戶相關 API
+export const userAPI = {
+  // 更新用戶資料
+  updateProfile: (userData) => api.put('/users/profile', userData),
+  
+  // 修改密碼
+  changePassword: (passwordData) => api.put('/users/password', passwordData),
+  
+  // 刪除帳戶
+  deleteAccount: () => api.delete('/users/profile'),
+};
+
+export default api; 
