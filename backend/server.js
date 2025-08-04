@@ -19,6 +19,7 @@ app.use(express.urlencoded({ extended: false }));
 // 路由
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
+app.use('/api/yfcases', require('./routes/yfcases'));
 
 // 首頁路由
 app.get('/', (req, res) => {
@@ -35,6 +36,15 @@ app.get('/', (req, res) => {
         updateProfile: 'PUT /api/users/profile',
         changePassword: 'PUT /api/users/password',
         deleteAccount: 'DELETE /api/users/profile'
+      },
+      yfcases: {
+        getAll: 'GET /api/yfcases',
+        getOne: 'GET /api/yfcases/:id',
+        create: 'POST /api/yfcases',
+        update: 'PUT /api/yfcases/:id',
+        delete: 'DELETE /api/yfcases/:id',
+        batchDelete: 'DELETE /api/yfcases/batch',
+        stats: 'GET /api/yfcases/stats'
       }
     }
   });
