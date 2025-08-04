@@ -1,1 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100;300;400;500;700;900&family=Roboto:wght@100;300;400;500;700;900&display=swap');
 @import "tailwindcss";
+
+/* Global font settings for entire application */
+* {
+  font-family: 'Noto Sans TC', 'Roboto', sans-serif;
+}
+
+/* Custom font classes */
+.font-noto {
+  font-family: 'Noto Sans TC', sans-serif;
+}
+
+.font-roboto {
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Ensure proper font rendering for mixed content */
+body {
+  font-family: 'Noto Sans TC', 'Roboto', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
