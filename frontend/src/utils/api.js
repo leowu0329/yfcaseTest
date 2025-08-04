@@ -61,4 +61,28 @@ export const userAPI = {
   deleteAccount: () => api.delete('/users/profile'),
 };
 
+// 案件相關 API
+export const yfcaseAPI = {
+  // 獲取所有案件
+  getAll: (params = {}) => api.get('/yfcases', { params }),
+  
+  // 獲取單一案件
+  getOne: (id) => api.get(`/yfcases/${id}`),
+  
+  // 創建案件
+  create: (caseData) => api.post('/yfcases', caseData),
+  
+  // 更新案件
+  update: (id, caseData) => api.put(`/yfcases/${id}`, caseData),
+  
+  // 刪除案件
+  delete: (id) => api.delete(`/yfcases/${id}`),
+  
+  // 批量刪除案件
+  batchDelete: (ids) => api.delete('/yfcases/batch', { data: { ids } }),
+  
+  // 獲取案件統計
+  getStats: () => api.get('/yfcases/stats'),
+};
+
 export default api; 
