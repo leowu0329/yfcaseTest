@@ -6,9 +6,9 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-16">
+      <div className="container mx-auto px-4 py-8">
         <div className="text-center">
-          <h1 className="text-5xl font-bold text-gray-900 mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-8">
             歡迎來到用戶認證系統
           </h1>
           
@@ -68,7 +68,7 @@ const Home = () => {
           )}
         </div>
         
-        <div className="mt-16 grid md:grid-cols-3 gap-8">
+        <div className="mt-12 grid md:grid-cols-3 gap-8">
           <div className="bg-white rounded-lg shadow-lg p-6">
             <div className="text-indigo-600 text-3xl mb-4">🔐</div>
             <h3 className="text-xl font-semibold mb-2">安全認證</h3>
