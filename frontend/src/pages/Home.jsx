@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { yfcaseAPI } from '../utils/api';
 
 const Home = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [yfcases, setYfcases] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
@@ -221,68 +222,14 @@ const Home = () => {
     if (user) {
       loadYfcases();
       loadStats();
+    } else {
+      // 未登入時自動跳轉到登入頁面
+      navigate('/login');
     }
-  }, [user, pagination.currentPage]);
+  }, [user, pagination.currentPage, navigate]);
 
   if (!user) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-        <div className="container mx-auto px-4 py-16">
-          <div className="text-center">
-            <h1 className="text-5xl font-bold text-gray-900 mb-8">
-              歡迎來到用戶認證系統
-            </h1>
-            
-            <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-auto">
-              <p className="text-gray-600 mb-6">
-                請登入或註冊以開始使用系統
-              </p>
-              
-              <div className="space-y-3">
-                <Link
-                  to="/login"
-                  className="block w-full bg-indigo-600 text-white py-2 px-4 rounded-md hover:bg-indigo-700 transition duration-200"
-                >
-                  登入
-                </Link>
-                <Link
-                  to="/register"
-                  className="block w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 transition duration-200"
-                >
-                  註冊
-                </Link>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-16 grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="text-indigo-600 text-3xl mb-4">🔐</div>
-              <h3 className="text-xl font-semibold mb-2">安全認證</h3>
-              <p className="text-gray-600">
-                使用 JWT 令牌和密碼加密確保您的帳戶安全
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="text-indigo-600 text-3xl mb-4">👤</div>
-              <h3 className="text-xl font-semibold mb-2">個人資料</h3>
-              <p className="text-gray-600">
-                管理您的個人資料、頭像和個人簡介
-              </p>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow-lg p-6">
-              <div className="text-indigo-600 text-3xl mb-4">⚡</div>
-              <h3 className="text-xl font-semibold mb-2">快速響應</h3>
-              <p className="text-gray-600">
-                基於 React 和 Node.js 的現代化應用架構
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return null; // 未登入時不顯示任何內容，會自動跳轉到登入頁面
   }
 
   if (loading && yfcases.length === 0) {
