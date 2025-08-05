@@ -10,6 +10,7 @@ const Detail = () => {
   const [yfcase, setYfcase] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('basic');
 
   useEffect(() => {
     if (!user) {
@@ -81,9 +82,144 @@ const Detail = () => {
     );
   }
 
+  // Tab 配置
+  const tabs = [
+    { id: 'basic', name: '基本資料', icon: '📋' }
+  ];
+
+  // 渲染基本資料 Tab
+  const renderBasicInfo = () => (
+    <div className="space-y-8">
+      {/* 基本資訊區塊 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <span className="mr-2">📋</span>
+          基本資訊
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <label className="block text-sm font-medium text-gray-500 mb-2">案號</label>
+            <p className="text-lg font-semibold text-gray-900">{yfcase.caseNumber}</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <label className="block text-sm font-medium text-gray-500 mb-2">所屬公司</label>
+            <p className="text-lg font-semibold text-gray-900">{yfcase.company}</p>
+          </div>
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <label className="block text-sm font-medium text-gray-500 mb-2">案件狀態</label>
+            <span className={`inline-flex px-3 py-1 text-sm font-semibold rounded-full ${
+              yfcase.status === '在途' 
+                ? 'bg-yellow-100 text-yellow-800' 
+                : 'bg-green-100 text-green-800'
+            }`}>
+              {yfcase.status}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* 地址資訊區塊 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <span className="mr-2">📍</span>
+          地址資訊
+        </h3>
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <label className="block text-sm font-medium text-gray-500 mb-3">完整地址</label>
+          <p className="text-lg font-semibold text-gray-900 leading-relaxed">
+            {[
+              yfcase.city,
+              yfcase.district,
+              yfcase.sectionNumber,
+              yfcase.subsection,
+              yfcase.village,
+              yfcase.neighborhood,
+              yfcase.street,
+              yfcase.section,
+              yfcase.lane,
+              yfcase.alley,
+              yfcase.number,
+              yfcase.floor
+            ]
+              .filter(Boolean)
+              .join('')}
+          </p>
+        </div>
+      </div>
+
+      {/* 負責人資訊區塊 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <span className="mr-2">👤</span>
+          負責人資訊
+        </h3>
+        <div className="bg-gray-50 p-6 rounded-lg">
+          <div className="flex items-center space-x-4">
+            <div className="p-3 bg-blue-100 rounded-full">
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-500">區域負責人</label>
+              <p className="text-xl font-semibold text-gray-900">{yfcase.responsiblePerson}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 時間資訊區塊 */}
+      <div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+          <span className="mr-2">⏰</span>
+          時間資訊
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-green-100 rounded-full">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500">建立時間</label>
+                <p className="text-lg font-semibold text-gray-900">
+                  {new Date(yfcase.createdAt).toLocaleString('zh-TW')}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-gray-50 p-6 rounded-lg">
+            <div className="flex items-center space-x-4">
+              <div className="p-3 bg-purple-100 rounded-full">
+                <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-500">更新時間</label>
+                <p className="text-lg font-semibold text-gray-900">
+                  {new Date(yfcase.updatedAt).toLocaleString('zh-TW')}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+
+
+  // 渲染對應的 Tab 內容
+  const renderTabContent = () => {
+    return renderBasicInfo();
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* 頁面標題 */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -100,121 +236,32 @@ const Detail = () => {
           </div>
         </div>
 
-        {/* 案件資訊卡片 */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          {/* 基本資訊 */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">基本資訊</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500">案號</label>
-                <p className="mt-1 text-sm text-gray-900 font-medium">{yfcase.caseNumber}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">所屬公司</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.company}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">案件狀態</label>
-                <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full mt-1 ${
-                  yfcase.status === '在途' 
-                    ? 'bg-yellow-100 text-yellow-800' 
-                    : 'bg-green-100 text-green-800'
-                }`}>
-                  {yfcase.status}
-                </span>
-              </div>
-            </div>
+        {/* Tab 導航 */}
+        <div className="bg-white rounded-lg shadow mb-6">
+          <div className="border-b border-gray-200">
+            <nav className="-mb-px flex space-x-8 px-6" aria-label="Tabs">
+              {tabs.map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2 ${
+                    activeTab === tab.id
+                      ? 'border-indigo-500 text-indigo-600'
+                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  }`}
+                >
+                  <span className="text-lg">{tab.icon}</span>
+                  <span>{tab.name}</span>
+                </button>
+              ))}
+            </nav>
           </div>
+        </div>
 
-          {/* 地址資訊 */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">地址資訊</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500">縣市</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.city}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">鄉鎮區里</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.district}</p>
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500">段號</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.sectionNumber || '-'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">小段</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.subsection || '-'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">村里</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.village || '-'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">鄰</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.neighborhood || '-'}</p>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mt-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500">街路</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.street || '-'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">段</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.section || '-'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">巷</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.lane || '-'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">弄</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.alley || '-'}</p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">號</label>
-                <p className="mt-1 text-sm text-gray-900">{yfcase.number}</p>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-500">樓(含之幾)</label>
-              <p className="mt-1 text-sm text-gray-900">{yfcase.floor || '-'}</p>
-            </div>
-          </div>
-
-          {/* 負責人資訊 */}
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">負責人資訊</h2>
-            <div>
-              <label className="block text-sm font-medium text-gray-500">區域負責人</label>
-              <p className="mt-1 text-sm text-gray-900">{yfcase.responsiblePerson}</p>
-            </div>
-          </div>
-
-          {/* 時間資訊 */}
-          <div className="px-6 py-4">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">時間資訊</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-500">建立時間</label>
-                <p className="mt-1 text-sm text-gray-900">
-                  {new Date(yfcase.createdAt).toLocaleString('zh-TW')}
-                </p>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-500">更新時間</label>
-                <p className="mt-1 text-sm text-gray-900">
-                  {new Date(yfcase.updatedAt).toLocaleString('zh-TW')}
-                </p>
-              </div>
-            </div>
+        {/* Tab 內容 */}
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-6">
+            {renderTabContent()}
           </div>
         </div>
       </div>
