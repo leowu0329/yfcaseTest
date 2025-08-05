@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { yfcaseAPI } from '../utils/api';
+import StatisticalData from '../components/Home/StatisticalData';
+import SearchAndFilter from '../components/Home/SearchAndFilter';
+import Table from '../components/Home/Table';
+import Pagination from '../components/Home/Pagination';
 
 const Home = () => {
   const { user, logout } = useAuth();
@@ -226,7 +230,7 @@ const Home = () => {
       // 未登入時自動跳轉到登入頁面
       navigate('/login');
     }
-  }, [user, pagination.currentPage, navigate]);
+  }, [user, pagination.currentPage, pagination.itemsPerPage, navigate]);
 
   if (!user) {
     return null; // 未登入時不顯示任何內容，會自動跳轉到登入頁面
@@ -252,291 +256,40 @@ const Home = () => {
           <p className="mt-2 text-gray-600">管理所有案件資料</p>
         </div>
 
-        {/* 統計卡片 */}
-        {stats && (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center">
-                <div className="p-2 bg-blue-100 rounded-lg">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">總案件數</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.overview.totalCases}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center">
-                <div className="p-2 bg-yellow-100 rounded-lg">
-                  <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">在途案件</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.overview.inProgressCases}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center">
-                <div className="p-2 bg-green-100 rounded-lg">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">結案案件</p>
-                  <p className="text-2xl font-bold text-gray-900">{stats.overview.completedCases}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow p-6">
-              <div className="flex items-center">
-                <div className="p-2 bg-purple-100 rounded-lg">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                  </svg>
-                </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-500">負責人</p>
-                  <p className="text-2xl font-bold text-gray-900">{user.username}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* 統計資料 */}
+        <StatisticalData stats={stats} user={user} />
 
         {/* 搜尋和篩選 */}
-        <div className="bg-white rounded-lg shadow mb-6">
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-              <input
-                type="text"
-                placeholder="案號"
-                value={searchParams.caseNumber}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, caseNumber: e.target.value }))}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              
-              <select
-                value={searchParams.company}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, company: e.target.value }))}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">所有公司</option>
-                <option value="揚富開發有限公司">揚富開發有限公司</option>
-                <option value="鉅汰開發有限公司">鉅汰開發有限公司</option>
-              </select>
-              
-              <select
-                value={searchParams.status}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, status: e.target.value }))}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">所有狀態</option>
-                <option value="在途">在途</option>
-                <option value="結案">結案</option>
-              </select>
-              
-              <input
-                type="text"
-                placeholder="縣市"
-                value={searchParams.city}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, city: e.target.value }))}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              
-              <input
-                type="text"
-                placeholder="負責人"
-                value={searchParams.responsiblePerson}
-                onChange={(e) => setSearchParams(prev => ({ ...prev, responsiblePerson: e.target.value }))}
-                className="border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-            </div>
-            
-            <div className="flex justify-between items-center mt-4">
-              <div className="flex space-x-2">
-                <button
-                  onClick={handleSearch}
-                  className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition duration-200"
-                >
-                  搜尋
-                </button>
-                <button
-                  onClick={resetSearch}
-                  className="bg-gray-500 text-white px-4 py-2 rounded-md hover:bg-gray-600 transition duration-200"
-                >
-                  重置
-                </button>
-              </div>
-              
-              <div className="flex space-x-2">
-                <button
-                  onClick={() => {
-                    setShowForm(true);
-                    setEditingCase(null);
-                    resetForm();
-                  }}
-                  className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition duration-200"
-                >
-                  新增案件
-                </button>
-                {selectedCases.length > 0 && (
-                  <button
-                    onClick={handleBatchDelete}
-                    className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition duration-200"
-                  >
-                    批量刪除 ({selectedCases.length})
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
+        <SearchAndFilter
+          searchParams={searchParams}
+          setSearchParams={setSearchParams}
+          handleSearch={handleSearch}
+          resetSearch={resetSearch}
+          onAddCase={() => {
+            setShowForm(true);
+            setEditingCase(null);
+            resetForm();
+          }}
+          selectedCases={selectedCases}
+          onBatchDelete={handleBatchDelete}
+        />
 
         {/* 案件列表 */}
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    <input
-                      type="checkbox"
-                      checked={selectedCases.length === yfcases.length && yfcases.length > 0}
-                      onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                    />
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">案號</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">公司</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">狀態</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">地址</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">負責人</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">建立時間</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {yfcases.map((yfcase) => (
-                  <tr key={yfcase._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <input
-                        type="checkbox"
-                        checked={selectedCases.includes(yfcase._id)}
-                        onChange={() => handleSelectCase(yfcase._id)}
-                        className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                      {yfcase.caseNumber}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {yfcase.company}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        yfcase.status === '在途' 
-                          ? 'bg-yellow-100 text-yellow-800' 
-                          : 'bg-green-100 text-green-800'
-                      }`}>
-                        {yfcase.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
-                      <div>
-                        <div>{yfcase.city} {yfcase.district}</div>
-                        <div className="text-xs text-gray-400">
-                          {[yfcase.street, yfcase.section, yfcase.lane, yfcase.alley, yfcase.number, yfcase.floor]
-                            .filter(Boolean)
-                            .join('')}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {yfcase.responsiblePerson}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(yfcase.createdAt).toLocaleDateString('zh-TW')}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                      <button
-                        onClick={() => handleEdit(yfcase)}
-                        className="text-indigo-600 hover:text-indigo-900 mr-3"
-                      >
-                        編輯
-                      </button>
-                      <button
-                        onClick={() => handleDelete(yfcase._id)}
-                        className="text-red-600 hover:text-red-900"
-                      >
-                        刪除
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          {/* 分頁 */}
-          {pagination.totalPages > 1 && (
-            <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
-              <div className="flex-1 flex justify-between sm:hidden">
-                <button
-                  onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage - 1 }))}
-                  disabled={pagination.currentPage === 1}
-                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                >
-                  上一頁
-                </button>
-                <button
-                  onClick={() => setPagination(prev => ({ ...prev, currentPage: prev.currentPage + 1 }))}
-                  disabled={pagination.currentPage === pagination.totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
-                >
-                  下一頁
-                </button>
-              </div>
-              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-sm text-gray-700">
-                    顯示第 <span className="font-medium">{((pagination.currentPage - 1) * pagination.itemsPerPage) + 1}</span> 到{' '}
-                    <span className="font-medium">
-                      {Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems)}
-                    </span> 筆，
-                    共 <span className="font-medium">{pagination.totalItems}</span> 筆結果
-                  </p>
-                </div>
-                <div>
-                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
-                    {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((page) => (
-                      <button
-                        key={page}
-                        onClick={() => setPagination(prev => ({ ...prev, currentPage: page }))}
-                        className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                          page === pagination.currentPage
-                            ? 'z-10 bg-indigo-50 border-indigo-500 text-indigo-600'
-                            : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    ))}
-                  </nav>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        <Table
+          yfcases={yfcases}
+          selectedCases={selectedCases}
+          handleSelectAll={handleSelectAll}
+          handleSelectCase={handleSelectCase}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+        />
+        
+        {/* 分頁 */}
+        <Pagination
+          pagination={pagination}
+          setPagination={setPagination}
+          onPageChange={() => loadYfcases()}
+        />
 
         {/* 新增/編輯表單 Modal */}
         {showForm && (
