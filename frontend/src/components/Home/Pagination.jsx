@@ -27,11 +27,8 @@ const Pagination = ({
 
     // 確保分頁數據存在
   if (!pagination) {
-    console.log('Pagination: No pagination data');
     return null;
   }
-
-  console.log('Pagination: Rendering with data:', pagination);
 
   return (
     <div className="bg-blue-50 rounded-lg shadow mt-6 px-4 py-3 border-2 border-blue-200 sm:px-6">

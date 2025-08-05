@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const Table = ({ 
   yfcases, 
@@ -8,6 +9,7 @@ const Table = ({
   handleEdit, 
   handleDelete 
 }) => {
+  const navigate = useNavigate();
   return (
     <div className="bg-white rounded-lg shadow overflow-hidden">
       <div className="overflow-x-auto">
@@ -42,9 +44,14 @@ const Table = ({
                     className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  {yfcase.caseNumber}
-                </td>
+                                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                      <button
+                        onClick={() => navigate(`/detail/${yfcase._id}`)}
+                        className="text-indigo-600 hover:text-indigo-900 hover:underline cursor-pointer"
+                      >
+                        {yfcase.caseNumber}
+                      </button>
+                    </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                   {yfcase.company}
                 </td>
