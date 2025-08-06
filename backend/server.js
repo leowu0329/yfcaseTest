@@ -20,6 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/yfcases', require('./routes/yfcases'));
+app.use('/api/persons', require('./routes/persons'));
 
 // 首頁路由
 app.get('/', (req, res) => {
@@ -45,6 +46,14 @@ app.get('/', (req, res) => {
         delete: 'DELETE /api/yfcases/:id',
         batchDelete: 'DELETE /api/yfcases/batch',
         stats: 'GET /api/yfcases/stats'
+      },
+      persons: {
+        getByYfcase: 'GET /api/persons/yfcase/:yfcases_id',
+        getOne: 'GET /api/persons/:id',
+        create: 'POST /api/persons',
+        update: 'PUT /api/persons/:id',
+        delete: 'DELETE /api/persons/:id',
+        batchDelete: 'DELETE /api/persons/batch'
       }
     }
   });

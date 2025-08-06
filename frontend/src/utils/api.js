@@ -85,4 +85,25 @@ export const yfcaseAPI = {
   getStats: () => api.get('/yfcases/stats'),
 };
 
+// 人員相關 API
+export const personAPI = {
+  // 獲取案件的所有人員
+  getByYfcase: (yfcases_id) => api.get(`/persons/yfcase/${yfcases_id}`),
+  
+  // 獲取單一人員
+  getOne: (id) => api.get(`/persons/${id}`),
+  
+  // 創建人員
+  create: (personData) => api.post('/persons', personData),
+  
+  // 更新人員
+  update: (id, personData) => api.put(`/persons/${id}`, personData),
+  
+  // 刪除人員
+  delete: (id) => api.delete(`/persons/${id}`),
+  
+  // 批量刪除人員
+  batchDelete: (ids) => api.delete('/persons/batch', { data: { ids } }),
+};
+
 export default api; 
