@@ -106,4 +106,25 @@ export const personAPI = {
   batchDelete: (ids) => api.delete('/persons/batch', { data: { ids } }),
 };
 
+// 土地相關 API
+export const landAPI = {
+  // 取得案件的土地列表
+  getByYfcase: (yfcases_id) => api.get(`/lands/yfcase/${yfcases_id}`),
+
+  // 取得單筆土地
+  getOne: (id) => api.get(`/lands/${id}`),
+
+  // 新增土地
+  create: (data) => api.post('/lands', data),
+
+  // 更新土地
+  update: (id, data) => api.put(`/lands/${id}`, data),
+
+  // 刪除土地
+  delete: (id) => api.delete(`/lands/${id}`),
+
+  // 批次刪除
+  batchDelete: (ids) => api.delete('/lands/batch', { data: { ids } }),
+};
+
 export default api; 

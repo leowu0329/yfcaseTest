@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { yfcaseAPI } from '../utils/api';
 import PersonManagement from '../components/Person/PersonManagement';
+import LandManagement from '../components/Land/LandManagement';
 
 const Detail = () => {
   const { id } = useParams();
@@ -86,7 +87,8 @@ const Detail = () => {
   // Tab 配置
   const tabs = [
     { id: 'basic', name: '基本資料', icon: '📋' },
-    { id: 'persons', name: '人員訊息', icon: '👥' }
+    { id: 'persons', name: '人員訊息', icon: '👥' },
+    { id: 'lands', name: '土地資訊', icon: '🏞️' }
   ];
 
   // 渲染基本資料 Tab
@@ -221,6 +223,8 @@ const Detail = () => {
         return renderBasicInfo();
       case 'persons':
         return <PersonManagement yfcases_id={id} />;
+      case 'lands':
+        return <LandManagement yfcases_id={id} />;
       default:
         return renderBasicInfo();
     }

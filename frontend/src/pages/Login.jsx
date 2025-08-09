@@ -4,8 +4,8 @@ import { useAuth } from '../context/AuthContext';
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: 'ryowu0329@gmail.com',
+    password: '#Rita1122',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);

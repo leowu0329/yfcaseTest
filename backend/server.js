@@ -21,6 +21,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/yfcases', require('./routes/yfcases'));
 app.use('/api/persons', require('./routes/persons'));
+app.use('/api/lands', require('./routes/lands'));
 
 // 首頁路由
 app.get('/', (req, res) => {
@@ -54,6 +55,14 @@ app.get('/', (req, res) => {
         update: 'PUT /api/persons/:id',
         delete: 'DELETE /api/persons/:id',
         batchDelete: 'DELETE /api/persons/batch'
+      },
+      lands: {
+        getByYfcase: 'GET /api/lands/yfcase/:yfcases_id',
+        getOne: 'GET /api/lands/:id',
+        create: 'POST /api/lands',
+        update: 'PUT /api/lands/:id',
+        delete: 'DELETE /api/lands/:id',
+        batchDelete: 'DELETE /api/lands/batch'
       }
     }
   });

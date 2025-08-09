@@ -266,10 +266,10 @@ const Home = () => {
           handleSearch={handleSearch}
           resetSearch={resetSearch}
           onAddCase={() => {
-            setShowForm(true);
-            setEditingCase(null);
-            resetForm();
-          }}
+                    setShowForm(true);
+                    setEditingCase(null);
+                    resetForm();
+                  }}
           selectedCases={selectedCases}
           onBatchDelete={handleBatchDelete}
         />
@@ -283,8 +283,8 @@ const Home = () => {
           handleEdit={handleEdit}
           handleDelete={handleDelete}
         />
-        
-        {/* 分頁 */}
+          
+          {/* 分頁 */}
         <Pagination
           pagination={pagination}
           setPagination={setPagination}
