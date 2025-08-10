@@ -8,11 +8,13 @@ const surveySchema = new mongoose.Schema({
   },
   surveyFirstDay: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    required: false
   },
   surveySecondDay: {
     type: Date,
-    default: Date.now
+    default: Date.now,
+    required: false
   },
   surveyForeclosureAnnouncementLink: {
     type: String,

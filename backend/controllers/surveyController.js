@@ -89,6 +89,9 @@ const createSurvey = async (req, res) => {
 const updateSurvey = async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    console.error('Survey update validation errors:', errors.array());
+    console.error('Request body:', req.body);
+    console.error('Request params:', req.params);
     return res.status(400).json({ 
       message: '資料驗證失敗',
       errors: errors.array() 
@@ -108,17 +111,25 @@ const updateSurvey = async (req, res) => {
       return res.status(404).json({ message: '找不到該勘查記錄' });
     }
 
-    survey.surveyFirstDay = surveyFirstDay || survey.surveyFirstDay;
-    survey.surveySecondDay = surveySecondDay || survey.surveySecondDay;
-    survey.surveyForeclosureAnnouncementLink = surveyForeclosureAnnouncementLink;
-    survey.survey988Link = survey988Link;
-    survey.surveyObjectPhotoLink = surveyObjectPhotoLink;
-    survey.surveyForeclosureRecordLink = surveyForeclosureRecordLink;
-    survey.surveyObjectViewLink = surveyObjectViewLink;
-    survey.surveyPagesViewLink = surveyPagesViewLink;
-    survey.surveyMoneytViewLink = surveyMoneytViewLink;
+    // 更新日期欄位，允許清空（null/undefined）
+    if (surveyFirstDay !== undefined) {
+      survey.surveyFirstDay = surveyFirstDay === '' ? null : surveyFirstDay;
+    }
+    if (surveySecondDay !== undefined) {
+      survey.surveySecondDay = surveySecondDay === '' ? null : surveySecondDay;
+    }
+    
+    // 更新其他欄位
+    survey.surveyForeclosureAnnouncementLink = surveyForeclosureAnnouncementLink || null;
+    survey.survey988Link = survey988Link || null;
+    survey.surveyObjectPhotoLink = surveyObjectPhotoLink || null;
+    survey.surveyForeclosureRecordLink = surveyForeclosureRecordLink || null;
+    survey.surveyObjectViewLink = surveyObjectViewLink || null;
+    survey.surveyPagesViewLink = surveyPagesViewLink || null;
+    survey.surveyMoneytViewLink = surveyMoneytViewLink || null;
 
     const updatedSurvey = await survey.save();
+    console.log('Survey updated successfully:', updatedSurvey);
     res.json(updatedSurvey);
   } catch (error) {
     console.error('Error updating survey:', error);

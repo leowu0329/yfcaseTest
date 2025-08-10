@@ -28,37 +28,90 @@ const surveyValidation = [
     .isISO8601()
     .withMessage('會勘日格式不正確'),
   body('surveyForeclosureAnnouncementLink')
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isURL()
     .withMessage('法拍公告連結格式不正確'),
   body('survey988Link')
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isURL()
     .withMessage('998連結格式不正確'),
   body('surveyObjectPhotoLink')
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isURL()
     .withMessage('物件照片連結格式不正確'),
   body('surveyForeclosureRecordLink')
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isURL()
     .withMessage('法拍記錄連結格式不正確'),
   body('surveyObjectViewLink')
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isURL()
     .withMessage('標的物連結格式不正確'),
   body('surveyPagesViewLink')
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isURL()
     .withMessage('收發文簿連結格式不正確'),
   body('surveyMoneytViewLink')
-    .optional()
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isURL()
+    .withMessage('流水帳連結格式不正確')
+];
+
+// 更新勘查記錄的驗證規則（不包含 yfcases_id）
+const surveyUpdateValidation = [
+  body('surveyFirstDay')
+    .optional({ nullable: true, checkFalsy: true })
+    .custom((value) => {
+      if (value === null || value === undefined || value === '') return true;
+      return /^\d{4}-\d{2}-\d{2}$/.test(value);
+    })
+    .withMessage('初勘日格式不正確'),
+  body('surveySecondDay')
+    .optional({ nullable: true, checkFalsy: true })
+    .custom((value) => {
+      if (value === null || value === undefined || value === '') return true;
+      return /^\d{4}-\d{2}-\d{2}$/.test(value);
+    })
+    .withMessage('會勘日格式不正確'),
+  body('surveyForeclosureAnnouncementLink')
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isURL()
+    .withMessage('法拍公告連結格式不正確'),
+  body('survey988Link')
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isURL()
+    .withMessage('998連結格式不正確'),
+  body('surveyObjectPhotoLink')
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isURL()
+    .withMessage('物件照片連結格式不正確'),
+  body('surveyForeclosureRecordLink')
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isURL()
+    .withMessage('法拍記錄連結格式不正確'),
+  body('surveyObjectViewLink')
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isURL()
+    .withMessage('標的物連結格式不正確'),
+  body('surveyPagesViewLink')
+    .optional({ nullable: true, checkFalsy: true })
+    .trim()
+    .isURL()
+    .withMessage('收發文簿連結格式不正確'),
+  body('surveyMoneytViewLink')
+    .optional({ nullable: true, checkFalsy: true })
     .trim()
     .isURL()
     .withMessage('流水帳連結格式不正確')
@@ -67,6 +120,6 @@ const surveyValidation = [
 router.route('/').post(surveyValidation, createSurvey);
 router.route('/batch').delete(batchDeleteSurveys);
 router.route('/yfcase/:yfcases_id').get(getSurveysByYfcase);
-router.route('/:id').get(getSurvey).put(surveyValidation, updateSurvey).delete(deleteSurvey);
+router.route('/:id').get(getSurvey).put(surveyUpdateValidation, updateSurvey).delete(deleteSurvey);
 
 module.exports = router;

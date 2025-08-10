@@ -29,20 +29,40 @@ const SurveyManagement = ({ yfcases_id }) => {
 
   const handleCreateSurvey = async (surveyData) => {
     try {
-      await surveyAPI.create(surveyData);
-      fetchSurveys();
+      console.log('Creating survey with data:', surveyData);
+      const response = await surveyAPI.create(surveyData);
+      console.log('Create response:', response);
+      
+      // 創建成功後，關閉表單並重新獲取數據
+      setIsFormOpen(false);
+      await fetchSurveys();
+      
+      // 顯示成功消息
+      alert('勘查記錄創建成功！');
     } catch (error) {
       console.error('Error creating survey:', error);
+      // 顯示錯誤消息給用戶
+      alert(`創建失敗：${error.response?.data?.message || error.message || '未知錯誤'}`);
     }
   };
 
   const handleUpdateSurvey = async (surveyData) => {
     try {
-      await surveyAPI.update(editingSurvey._id, surveyData);
+      console.log('Updating survey with data:', surveyData);
+      const response = await surveyAPI.update(editingSurvey._id, surveyData);
+      console.log('Update response:', response);
+      
+      // 更新成功後，關閉表單並重新獲取數據
       setEditingSurvey(null);
-      fetchSurveys();
+      setIsFormOpen(false);
+      await fetchSurveys();
+      
+      // 顯示成功消息
+      alert('勘查記錄更新成功！');
     } catch (error) {
       console.error('Error updating survey:', error);
+      // 顯示錯誤消息給用戶
+      alert(`更新失敗：${error.response?.data?.message || error.message || '未知錯誤'}`);
     }
   };
 

@@ -55,12 +55,18 @@ const SurveyForm = ({ isOpen, onClose, onSubmit, editingSurvey, yfcases_id }) =>
     const submitData = {
       ...formData,
       yfcases_id: yfcases_id,
-      surveyFirstDay: formData.surveyFirstDay || new Date().toISOString(),
-      surveySecondDay: formData.surveySecondDay || new Date().toISOString()
+      // 在編輯模式下，允許空值；在新增模式下，如果沒有值則使用當前時間
+      surveyFirstDay: editingSurvey 
+        ? (formData.surveyFirstDay === '' ? null : formData.surveyFirstDay)
+        : (formData.surveyFirstDay || new Date().toISOString()),
+      surveySecondDay: editingSurvey 
+        ? (formData.surveySecondDay === '' ? null : formData.surveySecondDay)
+        : (formData.surveySecondDay || new Date().toISOString())
     };
 
+    console.log('Submitting survey data:', submitData);
+    // 不直接調用onClose，讓父組件處理成功後的關閉邏輯
     onSubmit(submitData);
-    onClose();
   };
 
   if (!isOpen) return null;
