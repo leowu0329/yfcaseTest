@@ -127,4 +127,35 @@ export const landAPI = {
   batchDelete: (ids) => api.delete('/lands/batch', { data: { ids } }),
 };
 
+// 建物相關 API
+export const buildAPI = {
+  // 獲取案件的所有建物
+  getByYfcase: (yfcases_id) => api.get(`/builds/yfcase/${yfcases_id}`),
+  // 獲取單一建物
+  getOne: (id) => api.get(`/builds/${id}`),
+  // 創建建物
+  create: (buildData) => api.post('/builds', buildData),
+  // 更新建物
+  update: (id, buildData) => api.put(`/builds/${id}`, buildData),
+  // 刪除建物
+  delete: (id) => api.delete(`/builds/${id}`),
+  // 批量刪除建物
+  batchDelete: (ids) => api.delete('/builds/batch', { data: { ids } }),
+};
+
+// 勘查記錄相關 API
+export const surveyAPI = {
+  // 獲取案件的所有勘查記錄
+  getByYfcase: (yfcases_id) => api.get(`/surveys/yfcase/${yfcases_id}`),
+  // 獲取單一勘查記錄
+  getOne: (id) => api.get(`/surveys/${id}`),
+  // 創建勘查記錄
+  create: (surveyData) => api.post('/surveys', surveyData),
+  // 更新勘查記錄
+  update: (id, surveyData) => api.put(`/surveys/${id}`, surveyData),
+  // 刪除勘查記錄
+  delete: (id) => api.delete(`/surveys/${id}`),
+  // 批量刪除勘查記錄
+  batchDelete: (ids) => api.delete('/surveys/batch', { data: { ids } }),
+};
 export default api; 

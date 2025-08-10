@@ -9,8 +9,7 @@ const LandTable = ({ lands = [], onEdit, onDelete }) => {
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">地號</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">地坪</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">個人持分</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">所有持分</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">計算後坪數</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">計算後地坪</th>
             <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">備註</th>
             <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">操作</th>
           </tr>
@@ -24,25 +23,18 @@ const LandTable = ({ lands = [], onEdit, onDelete }) => {
             lands.map(land => (
               <tr key={land._id}>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{land['地號']}</div>
-                  {land['連結'] && (
-                    <a href={land['連結']} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">查看連結</a>
+                  <div className="text-sm font-medium text-gray-900">{land.landNumber}</div>
+                  {land.landUrl && (
+                    <a href={land.landUrl} target="_blank" rel="noreferrer" className="text-xs text-indigo-600 hover:underline">查看連結</a>
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{Number(land['地坪']).toFixed(2)}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{land['個人持分']}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{land['所有持分']}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{Number(land.landArea).toFixed(2)}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{land.landHoldingPointPersonal}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{land.landHoldingPointAll}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {(() => {
-                    const area = Number(land['地坪'])
-                    const personal = Number(land['個人持分'])
-                    const total = Number(land['所有持分'])
-                    if (!isFinite(area) || !isFinite(personal) || !isFinite(total) || total <= 0) return '-'
-                    const result = (personal / total) * area
-                    return isFinite(result) ? result.toFixed(2) : '-'
-                  })()}
+                  {land.landCalculatedArea ? Number(land.landCalculatedArea).toFixed(2) : '-'}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{land['備註'] || '-'}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{land.landRemark || '-'}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                   <div className="inline-flex items-center space-x-2">
                     <button
@@ -75,5 +67,4 @@ LandTable.propTypes = {
 }
 
 export default LandTable
-
 

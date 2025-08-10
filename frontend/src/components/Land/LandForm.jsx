@@ -3,43 +3,43 @@ import PropTypes from 'prop-types'
 import { landAPI } from '../../utils/api'
 
 const initialForm = {
-  地號: '',
-  連結: '',
-  地坪: '',
-  個人持分: '',
-  所有持分: '',
-  備註: '',
+  landNumber: '',
+  landUrl: '',
+  landArea: '',
+  landHoldingPointPersonal: '',
+  landHoldingPointAll: '',
+  landRemark: '',
 }
 
 const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
   const [form, setForm] = useState(() => initialForm)
+  const [submitting, setSubmitting] = useState(false)
+  const [error, setError] = useState(null)
+
+  const computedArea = useMemo(() => {
+    const area = parseFloat(form.landArea)
+    const personal = parseInt(form.landHoldingPointPersonal, 10)
+    const total = parseInt(form.landHoldingPointAll, 10)
+    if (!isFinite(area) || !isFinite(personal) || !isFinite(total) || total <= 0) return null
+    const result = Math.round((personal / total) * area * 100) / 100
+    return isFinite(result) ? result.toFixed(2) : null
+  }, [form])
 
   useEffect(() => {
     if (!isOpen) return
     if (initialLand?._id) {
       setForm({
-        地號: initialLand['地號'] ?? '',
-        連結: initialLand['連結'] ?? '',
-        地坪: initialLand['地坪'] ?? '',
-        個人持分: initialLand['個人持分'] ?? '',
-        所有持分: initialLand['所有持分'] ?? '',
-        備註: initialLand['備註'] ?? '',
+        landNumber: initialLand.landNumber ?? '',
+        landUrl: initialLand.landUrl ?? '',
+        landArea: initialLand.landArea ?? '',
+        landHoldingPointPersonal: initialLand.landHoldingPointPersonal ?? '',
+        landHoldingPointAll: initialLand.landHoldingPointAll ?? '',
+        landRemark: initialLand.landRemark ?? '',
       })
     } else {
       setForm(initialForm)
     }
   }, [isOpen, initialLand])
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState(null)
-
-  const computedArea = useMemo(() => {
-    const area = parseFloat(form['地坪'])
-    const personal = parseInt(form['個人持分'], 10)
-    const total = parseInt(form['所有持分'], 10)
-    if (!isFinite(area) || !isFinite(personal) || !isFinite(total) || total <= 0) return null
-    const result = (personal / total) * area
-    return isFinite(result) ? result.toFixed(2) : null
-  }, [form])
 
   if (!isOpen) return null
 
@@ -53,16 +53,36 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
     setSubmitting(true)
     setError(null)
     try {
-      const payload = {
-        yfcases_id,
-        地號: form['地號'].trim(),
-        連結: form['連結'] ? form['連結'].trim() : undefined,
-        地坪: form['地坪'] === '' ? undefined : parseFloat(form['地坪']),
-        個人持分: form['個人持分'] === '' ? undefined : parseInt(form['個人持分'], 10),
-        所有持分: form['所有持分'] === '' ? undefined : parseInt(form['所有持分'], 10),
-        備註: form['備註'] ? form['備註'].trim() : undefined,
+      // 檢查必填欄位
+      if (!form.landNumber.trim()) {
+        setError('地號為必填欄位')
+        return
+      }
+      if (!form.landArea || isNaN(parseFloat(form.landArea))) {
+        setError('地坪為必填欄位且需為數字')
+        return
+      }
+      if (!form.landHoldingPointPersonal || isNaN(parseInt(form.landHoldingPointPersonal, 10))) {
+        setError('個人持分為必填欄位且需為正整數')
+        return
+      }
+      if (!form.landHoldingPointAll || isNaN(parseInt(form.landHoldingPointAll, 10))) {
+        setError('所有持分為必填欄位且需為正整數')
+        return
       }
 
+      const payload = {
+        yfcases_id,
+        landNumber: form.landNumber.trim(),
+        landUrl: form.landUrl ? form.landUrl.trim() : '',
+        landArea: parseFloat(form.landArea),
+        landHoldingPointPersonal: parseInt(form.landHoldingPointPersonal, 10),
+        landHoldingPointAll: parseInt(form.landHoldingPointAll, 10),
+        landRemark: form.landRemark ? form.landRemark.trim() : '',
+        // landCalculatedArea 由後端自動計算
+      }
+
+      console.log('Sending payload:', payload)
       if (initialLand?._id) {
         await landAPI.update(initialLand._id, payload)
       } else {
@@ -72,8 +92,25 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
       onSuccess?.()
       onClose?.()
     } catch (err) {
-      console.error(err)
-      setError(err?.response?.data?.message || '儲存失敗')
+      console.error('LandForm error:', err)
+      console.error('Response data:', err?.response?.data)
+      
+      if (err?.response?.status === 401) {
+        setError('請先登入系統，即將跳轉到登入頁面')
+        setTimeout(() => {
+          window.location.href = '/login'
+        }, 2000)
+        return
+      }
+      
+      const errorMessage = err?.response?.data?.message || '儲存失敗'
+      const validationErrors = err?.response?.data?.errors
+      if (validationErrors && Array.isArray(validationErrors)) {
+        const errorDetails = validationErrors.map(e => `${e.param}: ${e.msg}`).join(', ')
+        setError(`${errorMessage}: ${errorDetails}`)
+      } else {
+        setError(errorMessage)
+      }
     } finally {
       setSubmitting(false)
     }
@@ -102,8 +139,8 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">地號 *</label>
                 <input
                   type="text"
-                  name="地號"
-                  value={form['地號']}
+                  name="landNumber"
+                  value={form.landNumber}
                   onChange={handleChange}
                   required
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -113,8 +150,8 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">連結</label>
                 <input
                   type="url"
-                  name="連結"
-                  value={form['連結']}
+                  name="landUrl"
+                  value={form.landUrl}
                   onChange={handleChange}
                   placeholder="https://example.com"
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -127,9 +164,9 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">地坪 (坪) *</label>
                 <input
                   type="number"
-                  name="地坪"
+                  name="landArea"
                   step="0.01"
-                  value={form['地坪']}
+                  value={form.landArea}
                   onChange={handleChange}
                   required
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -139,10 +176,10 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">個人持分 *</label>
                 <input
                   type="number"
-                  name="個人持分"
+                  name="landHoldingPointPersonal"
                   min="1"
                   step="1"
-                  value={form['個人持分']}
+                  value={form.landHoldingPointPersonal}
                   onChange={handleChange}
                   required
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -152,17 +189,17 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">所有持分 *</label>
                 <input
                   type="number"
-                  name="所有持分"
+                  name="landHoldingPointAll"
                   min="1"
                   step="1"
-                  value={form['所有持分']}
+                  value={form.landHoldingPointAll}
                   onChange={handleChange}
                   required
                   className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
               </div>
               <div className="md:col-span-3">
-                <label className="block text-sm font-medium text-gray-700 mb-2">計算後坪數</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">計算後地坪 (預覽)</label>
                 <input
                   type="text"
                   value={computedArea ?? '-'}
@@ -175,8 +212,8 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">備註</label>
               <textarea
-                name="備註"
-                value={form['備註']}
+                name="landRemark"
+                value={form.landRemark}
                 onChange={handleChange}
                 rows={3}
                 className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
@@ -197,7 +234,7 @@ const LandForm = ({ isOpen, onClose, onSuccess, yfcases_id, initialLand }) => {
                 className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-60"
                 disabled={submitting}
               >
-                {submitting ? '送出中...' : '新增'}
+                {submitting ? '送出中...' : (initialLand?._id ? '更新' : '新增')}
               </button>
             </div>
           </form>
@@ -216,5 +253,3 @@ LandForm.propTypes = {
 }
 
 export default LandForm
-
-

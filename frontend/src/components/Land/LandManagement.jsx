@@ -67,7 +67,7 @@ const LandManagement = ({ yfcases_id }) => {
         }}
         onDelete={async (land) => {
           if (!land?._id) return
-          if (!window.confirm(`確定要刪除地號「${land['地號']}」嗎？`)) return
+          if (!window.confirm(`確定要刪除地號「${land.landNumber}」嗎？`)) return
           try {
             await landAPI.delete(land._id)
             await loadLands()
@@ -94,5 +94,3 @@ LandManagement.propTypes = {
 }
 
 export default LandManagement
-
-

@@ -17,30 +17,31 @@ router.use(protect);
 
 const landValidation = [
   body('yfcases_id').notEmpty().withMessage('案件ID為必填欄位').isMongoId().withMessage('案件ID格式不正確'),
-  body('地號').notEmpty().withMessage('地號為必填欄位').isString().trim(),
-  body('連結').optional({ nullable: true, checkFalsy: true }).isURL().withMessage('請輸入正確的網址'),
-  body('地坪')
+  body('landNumber').notEmpty().withMessage('地號為必填欄位'),
+  body('landUrl').optional({ nullable: true, checkFalsy: true }).isURL().withMessage('請輸入正確的網址'),
+  body('landArea')
     .notEmpty()
     .withMessage('地坪為必填欄位')
     .bail()
-    .custom((v) => !isNaN(v))
-    .withMessage('地坪需為數字')
+    .isFloat({ min: 0 })
+    .withMessage('地坪需為正數')
     .toFloat(),
-  body('個人持分')
+  body('landHoldingPointPersonal')
     .notEmpty()
     .withMessage('個人持分為必填欄位')
     .bail()
     .isInt({ min: 1 })
     .withMessage('個人持分需為正整數')
     .toInt(),
-  body('所有持分')
+  body('landHoldingPointAll')
     .notEmpty()
     .withMessage('所有持分為必填欄位')
     .bail()
     .isInt({ min: 1 })
     .withMessage('所有持分需為正整數')
     .toInt(),
-  body('備註').optional({ nullable: true, checkFalsy: true }).isString().trim(),
+  body('landRemark').optional({ nullable: true, checkFalsy: true }).isString(),
+  // landCalculatedArea 由後端自動計算，不需要前端傳送
 ];
 
 router.route('/')
@@ -58,5 +59,3 @@ router.route('/:id')
   .delete(deleteLand);
 
 module.exports = router;
-
-

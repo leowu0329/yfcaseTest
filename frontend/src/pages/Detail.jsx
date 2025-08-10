@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { yfcaseAPI } from '../utils/api';
 import PersonManagement from '../components/Person/PersonManagement';
 import LandManagement from '../components/Land/LandManagement';
+import BuildManagement from '../components/Build/BuildManagement';
+import SurveyManagement from '../components/Survey/SurveyManagement';
 
 const Detail = () => {
   const { id } = useParams();
@@ -88,7 +90,9 @@ const Detail = () => {
   const tabs = [
     { id: 'basic', name: '基本資料', icon: '📋' },
     { id: 'persons', name: '人員訊息', icon: '👥' },
-    { id: 'lands', name: '土地資訊', icon: '🏞️' }
+    { id: 'lands', name: '土地資訊', icon: '🏞️' },
+    { id: 'builds', name: '建物資訊', icon: '🏢' },
+    { id: 'surveys', name: '勘查記錄', icon: '🔍' }
   ];
 
   // 渲染基本資料 Tab
@@ -225,6 +229,10 @@ const Detail = () => {
         return <PersonManagement yfcases_id={id} />;
       case 'lands':
         return <LandManagement yfcases_id={id} />;
+      case 'builds':
+        return <BuildManagement yfcases_id={id} />;
+      case 'surveys':
+        return <SurveyManagement yfcases_id={id} />;
       default:
         return renderBasicInfo();
     }

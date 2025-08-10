@@ -4,7 +4,7 @@ const { validationResult } = require('express-validator');
 // 取得特定案件(yfcases_id)的土地清單
 const getLandsByYfcase = async (req, res) => {
   try {
-    const lands = await Land.find({ yfcases_id: req.params.yfcases_id }).sort({ 建立時間: -1 });
+    const lands = await Land.find({ yfcases_id: req.params.yfcases_id }).sort({ createdAt: -1 });
     res.json({ success: true, data: lands });
   } catch (error) {
     console.error('獲取土地清單錯誤:', error);
@@ -29,15 +29,27 @@ const getLand = async (req, res) => {
 // 新增土地
 const createLand = async (req, res) => {
   try {
+    console.log('createLand - Request body:', req.body);
+    
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+      console.log('createLand - Validation errors:', errors.array());
       return res.status(400).json({ success: false, message: '資料驗證失敗', errors: errors.array() });
     }
+    
+    console.log('createLand - Creating land with data:', req.body);
     const land = await Land.create(req.body);
+    console.log('createLand - Created land:', land);
+    
     res.status(201).json({ success: true, data: land });
   } catch (error) {
     console.error('新增土地錯誤:', error);
-    res.status(500).json({ success: false, message: '新增土地失敗' });
+    console.error('Error stack:', error.stack);
+    res.status(500).json({ 
+      success: false, 
+      message: '新增土地失敗',
+      error: error.message 
+    });
   }
 };
 
@@ -48,6 +60,7 @@ const updateLand = async (req, res) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({ success: false, message: '資料驗證失敗', errors: errors.array() });
     }
+    
     const land = await Land.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!land) {
       return res.status(404).json({ success: false, message: '土地不存在' });
@@ -96,5 +109,3 @@ module.exports = {
   deleteLand,
   batchDeleteLands,
 };
-
-

@@ -7,19 +7,18 @@ const landSchema = new mongoose.Schema(
       ref: 'Yfcase',
       required: [true, '案件ID為必填欄位'],
     },
-    地號: {
+    landNumber: {
       type: String,
       required: [true, '請輸入地號'],
       trim: true,
     },
-    連結: {
+    landUrl: {
       type: String,
       trim: true,
       validate: {
         validator: function (v) {
           if (!v) return true;
           try {
-            // 將相對簡單的 URL 驗證交給 WHATWG URL 解析
             new URL(v);
             return true;
           } catch (e) {
@@ -29,12 +28,12 @@ const landSchema = new mongoose.Schema(
         message: '請輸入正確的網址',
       },
     },
-    地坪: {
+    landArea: {
       type: Number,
       required: [true, '請輸入地坪'],
       set: (v) => (v === null || v === undefined ? v : Math.round(Number(v) * 100) / 100),
     },
-    個人持分: {
+    landHoldingPointPersonal: {
       type: Number,
       required: [true, '請輸入個人持分'],
       min: [1, '個人持分需為正整數'],
@@ -43,7 +42,7 @@ const landSchema = new mongoose.Schema(
         message: '個人持分需為正整數',
       },
     },
-    所有持分: {
+    landHoldingPointAll: {
       type: Number,
       required: [true, '請輸入所有持分'],
       min: [1, '所有持分需為正整數'],
@@ -52,7 +51,12 @@ const landSchema = new mongoose.Schema(
         message: '所有持分需為正整數',
       },
     },
-    備註: {
+    landCalculatedArea: {
+      type: Number,
+      default: 0,
+      set: (v) => (v === null || v === undefined ? v : Math.round(Number(v) * 100) / 100),
+    },
+    landRemark: {
       type: String,
       trim: true,
     },
@@ -67,6 +71,45 @@ const landSchema = new mongoose.Schema(
 
 landSchema.index({ yfcases_id: 1 });
 
+// 儲存前自動計算「計算後地坪」
+landSchema.pre('save', function (next) {
+  if (
+    this.landArea &&
+    this.landHoldingPointPersonal &&
+    this.landHoldingPointAll &&
+    this.landHoldingPointAll > 0
+  ) {
+    this.landCalculatedArea =
+      Math.round(
+        (this.landHoldingPointPersonal / this.landHoldingPointAll) *
+          this.landArea *
+          100
+      ) / 100;
+  } else {
+    this.landCalculatedArea = 0;
+  }
+  next();
+});
+
+// 更新前自動計算「計算後地坪」
+landSchema.pre('findOneAndUpdate', function (next) {
+  const update = this.getUpdate();
+  if (
+    update.landArea &&
+    update.landHoldingPointPersonal &&
+    update.landHoldingPointAll &&
+    update.landHoldingPointAll > 0
+  ) {
+    update.landCalculatedArea =
+      Math.round(
+        (update.landHoldingPointPersonal / update.landHoldingPointAll) *
+          update.landArea *
+          100
+      ) / 100;
+  } else {
+    update.landCalculatedArea = 0;
+  }
+  next();
+});
+
 module.exports = mongoose.model('Land', landSchema);
-
-

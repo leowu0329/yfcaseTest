@@ -16,15 +16,17 @@ const protect = async (req, res, next) => {
       // 獲取用戶信息
       req.user = await User.findById(decoded.id).select('-password');
 
+      if (!req.user) {
+        return res.status(401).json({ message: '未授權，用戶不存在' });
+      }
+
       next();
     } catch (error) {
       console.error(error);
-      res.status(401).json({ message: '未授權，token 無效' });
+      return res.status(401).json({ message: '未授權，token 無效' });
     }
-  }
-
-  if (!token) {
-    res.status(401).json({ message: '未授權，沒有 token' });
+  } else {
+    return res.status(401).json({ message: '未授權，沒有 token' });
   }
 };
 

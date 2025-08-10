@@ -21,7 +21,9 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/yfcases', require('./routes/yfcases'));
 app.use('/api/persons', require('./routes/persons'));
+app.use('/api/builds', require('./routes/builds'));
 app.use('/api/lands', require('./routes/lands'));
+app.use('/api/surveys', require('./routes/surveys'));
 
 // 首頁路由
 app.get('/', (req, res) => {
@@ -56,6 +58,14 @@ app.get('/', (req, res) => {
         delete: 'DELETE /api/persons/:id',
         batchDelete: 'DELETE /api/persons/batch'
       },
+      builds: {
+        getByYfcase: 'GET /api/builds/yfcase/:yfcases_id',
+        getOne: 'GET /api/builds/:id',
+        create: 'POST /api/builds',
+        update: 'PUT /api/builds/:id',
+        delete: 'DELETE /api/builds/:id',
+        batchDelete: 'DELETE /api/builds/batch'
+      },
       lands: {
         getByYfcase: 'GET /api/lands/yfcase/:yfcases_id',
         getOne: 'GET /api/lands/:id',
@@ -63,6 +73,14 @@ app.get('/', (req, res) => {
         update: 'PUT /api/lands/:id',
         delete: 'DELETE /api/lands/:id',
         batchDelete: 'DELETE /api/lands/batch'
+      },
+      surveys: {
+        getByYfcase: 'GET /api/surveys/yfcase/:yfcases_id',
+        getOne: 'GET /api/surveys/:id',
+        create: 'POST /api/surveys',
+        update: 'PUT /api/surveys/:id',
+        delete: 'DELETE /api/surveys/:id',
+        batchDelete: 'DELETE /api/surveys/batch'
       }
     }
   });
