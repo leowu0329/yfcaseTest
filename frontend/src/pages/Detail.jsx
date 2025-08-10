@@ -7,6 +7,7 @@ import LandManagement from '../components/Land/LandManagement';
 import BuildManagement from '../components/Build/BuildManagement';
 import SurveyManagement from '../components/Survey/SurveyManagement';
 import FinalDecisionManagement from '../components/FinalDecision/FinalDecisionManagement';
+import ResultManagement from '../components/Result/ResultManagement';
 
 const Detail = () => {
   const { id } = useParams();
@@ -94,7 +95,8 @@ const Detail = () => {
     { id: 'lands', name: '土地資訊', icon: '🏞️' },
     { id: 'builds', name: '建物資訊', icon: '🏢' },
     { id: 'surveys', name: '勘查記錄', icon: '🔍' },
-    { id: 'finalDecisions', name: '最終判定', icon: '⚖️' }
+    { id: 'finalDecisions', name: '最終判定', icon: '⚖️' },
+    { id: 'results', name: '執行結果', icon: '📊' }
   ];
 
   // 渲染基本資料 Tab
@@ -237,6 +239,8 @@ const Detail = () => {
         return <SurveyManagement yfcases_id={id} />;
       case 'finalDecisions':
         return <FinalDecisionManagement yfcases_id={id} />;
+      case 'results':
+        return <ResultManagement yfcases_id={id} />;
       default:
         return renderBasicInfo();
     }

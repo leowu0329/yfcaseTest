@@ -25,6 +25,7 @@ app.use('/api/builds', require('./routes/builds'));
 app.use('/api/lands', require('./routes/lands'));
 app.use('/api/surveys', require('./routes/surveys'));
 app.use('/api/finalDecisions', require('./routes/finalDecisions'));
+app.use('/api/results', require('./routes/results'));
 
 // 首頁路由
 app.get('/', (req, res) => {
@@ -90,6 +91,14 @@ app.get('/', (req, res) => {
         update: 'PUT /api/finalDecisions/:id',
         delete: 'DELETE /api/finalDecisions/:id',
         batchDelete: 'DELETE /api/finalDecisions/batch'
+      },
+      results: {
+        getByYfcase: 'GET /api/results/yfcase/:yfcases_id',
+        getOne: 'GET /api/results/:id',
+        create: 'POST /api/results',
+        update: 'PUT /api/results/:id',
+        delete: 'DELETE /api/results/:id',
+        batchDelete: 'DELETE /api/results/batch'
       }
     }
   });
